@@ -1,17 +1,13 @@
 {
-  "name": "mongodb_synidaemi",
-  "version": "1.0.0",
-  "description": "synidaemi_1_fyrir_mongodb",
-  "main": "ChatServer.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon ChatServer.js"
-  },
-  "author": "Sveinn Arnar Stefansson",
-  "license": "ISC",
+  "name": "socket-chat-example",
+  "type": "module",
+  "version": "0.0.1",
+  "description": "my first socket.io app",
   "dependencies": {
-    "express": "^4.16.4",
-    "mongodb": "^3.2.2",
-    "socket.io": "^2.2.0"
+    "express": "^4.19.2",
+    "socket.io": "^4.7.4"
+  },
+  "devDependencies": {
+    "mongodb": "^6.5.0"
   }
 }

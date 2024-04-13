@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Skilaverkefni 3 - SocketIO</title>
+    <link rel="stylesheet" href="/index.css">
+  </head>
+  <body>
+    <div id="chat-messages"></div> 
+
+    <ul id="messages"></ul>
+    <div id="online-users"></div> 
+    <form id="form" action="">
+      <input id="input" autocomplete="off" /><button>Senda</button>
+    </form>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+
+      function authenticate() {
+        const password = prompt('Settu inn lykilorð:');
+        socket.emit('authenticate', password);
+      }
+
+      socket.on('connect', () => {
+        authenticate();
+      });
+      
+      const form = document.getElementById('form');
+      const input = document.getElementById('input');
+      const messages = document.getElementById('messages');
+      
+      socket.on('updateOnlineUsers', (users) => { // Sýnir tengda notendur
+        const onlineUsersDiv = document.getElementById('online-users');
+        onlineUsersDiv.innerHTML = `<strong>Tengdir notendur(${users.length}):</strong><br>`;
+        users.forEach((user) => {
+          onlineUsersDiv.innerHTML += `${user}<br>`;
+        });
+      });
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (input.value) {
+          socket.emit('chat message', input.value);
+          input.value = '';
+        }
+      });
+      
+      socket.on('previousMessages', (messages) => { // Sýna fyrri skilaboð
+        const chatMessagesDiv = document.getElementById('chat-messages');
+        messages.forEach((msg) => {
+          const item = document.createElement('div');
+          item.textContent = `(${msg.time}) | ${msg.user}: ${msg.message}`;
+          chatMessagesDiv.appendChild(item);
+        });
+      });
+      
+      socket.on('chooseName', () => {  // prompt-a notenda til að velja notendanafn
+        let userName = prompt('Veldu notendanafn.');
+        socket.emit('chooseName', userName);
+      });
+
+      socket.on('chat message', (data) => {
+        const item = document.createElement('li');
+        item.textContent = `(${data.time}) | ${data.user}: ${data.message}`; // Kemur út svona: (01/01/2024 13:37) | Notendanafn: Skilaboð
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+    </script>
+
+  </body>
+</html>
