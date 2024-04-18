@@ -13,8 +13,6 @@ const io = new Server(server);
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-app.use(express.static(join(__dirname, ''))); // til að css nái að tengjast
-
 const PASSWORD = "1337"; // Lykilorð sem FASTI
 
 let onlineUsers = [];
@@ -23,6 +21,8 @@ let db;
 app.get('/', (req, res) => {
   res.sendFile(join(__dirname, 'index.html'));
 });
+app.use(express.static(join(__dirname, ''))); // til að css nái að tengjast
+
 
 // Tengja URI fyrir mongodb 
 const uri = 'mongodb://localhost:27017';
@@ -47,7 +47,7 @@ MongoClient.connect(uri, options)
         // Emit Emit-a eldri skilaboðum til nýs notenda
         try {
           const messages = await db.collection('messages').find().toArray();
-          console.log('Previous messages:', messages); // gera log af eldri skilaboðum
+          //console.log('Previous messages:', messages); // gera log af eldri skilaboðum
           socket.emit('previousMessages', messages);
         } catch (error) {
           console.error('Error: Næst ekki að sækja frá MongoDB:', error);
@@ -79,6 +79,10 @@ io.on('connection', (socket) => {
       socket.disconnect(true); // Disconnect-a notenda ef auðkenni klikkar
     }
   });
+
+  socket.on('filter', function (value) {
+    console.log(value)
+  })
 
   socket.on('chooseName', (userName) => {
     socket.userName = userName;

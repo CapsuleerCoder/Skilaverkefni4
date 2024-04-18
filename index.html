@@ -9,7 +9,10 @@
     <div id="chat-messages"></div> 
 
     <ul id="messages"></ul>
-    <div id="online-users"></div> 
+    <div id="online-users"></div>
+    <form id="filterform">
+      <input id="filter5">
+    </form>
     <form id="form" action="">
       <input id="input" autocomplete="off" /><button>Senda</button>
     </form>
@@ -26,10 +29,14 @@
       socket.on('connect', () => {
         authenticate();
       });
-      
+
+
+
       const form = document.getElementById('form');
       const input = document.getElementById('input');
       const messages = document.getElementById('messages');
+      const filterform = document.getElementById("filterform")
+      const filter1 = document.getElementById("filter5")
       
       socket.on('updateOnlineUsers', (users) => { // Sýnir tengda notendur
         const onlineUsersDiv = document.getElementById('online-users');
@@ -38,6 +45,14 @@
           onlineUsersDiv.innerHTML += `${user}<br>`;
         });
       });
+
+      filterform.addEventListener("submit", function(e) {
+      e.preventDefault();
+
+          socket.emit('filter', filter1.value);
+          filter1.value = '';
+
+    })
 
       form.addEventListener('submit', (e) => {
         e.preventDefault();
