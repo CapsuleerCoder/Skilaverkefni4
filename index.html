@@ -11,8 +11,9 @@
     <ul id="messages"></ul>
     <div id="online-users"></div>
     <form id="filterform">
-      <input id="filter5">
+      <input id="filter5"/><button>sía</button>
     </form>
+    <button id="clearFilter">Hreinsa Síu</button>
     <form id="form" action="">
       <input id="input" autocomplete="off" /><button>Senda</button>
     </form>
@@ -37,7 +38,11 @@
       const messages = document.getElementById('messages');
       const filterform = document.getElementById("filterform")
       const filter1 = document.getElementById("filter5")
-      
+      const filterclean = document.getElementById("clearFilter")
+      let current_filter = ""
+      let msg_list = []
+      let userName = ""
+
       socket.on('updateOnlineUsers', (users) => { // Sýnir tengda notendur
         const onlineUsersDiv = document.getElementById('online-users');
         onlineUsersDiv.innerHTML = `<strong>Tengdir notendur(${users.length}):</strong><br>`;
@@ -48,11 +53,28 @@
 
       filterform.addEventListener("submit", function(e) {
       e.preventDefault();
+        let chatMessagesDiv = document.getElementById('chat-messages');
+        const filteredmsg = msg_list.filter(msg => msg.user === filter1.value )
+        document.getElementById("chat-messages").innerHTML = "";
+        filteredmsg.forEach((msg) => {
+          const item = document.createElement('div');
+          item.textContent = `(${msg.time}) | ${msg.user}: ${msg.message}`;
+          chatMessagesDiv.appendChild(item);
+        })          
+        current_filter = filter1.value;
+        filter1.value = '';
+        //socket.emit('filter', filter1.value);
+      })
 
-          socket.emit('filter', filter1.value);
-          filter1.value = '';
-
-    })
+      filterclean.addEventListener("click", function (){
+        let chatMessagesDiv = document.getElementById('chat-messages');
+        msg_list.forEach((msg) => {
+          const item = document.createElement('div');
+          item.textContent = `(${msg.time}) | ${msg.user}: ${msg.message}`;
+          chatMessagesDiv.appendChild(item);
+          current_filter = ""
+        });
+      })
 
       form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -63,7 +85,8 @@
       });
       
       socket.on('previousMessages', (messages) => { // Sýna fyrri skilaboð
-        const chatMessagesDiv = document.getElementById('chat-messages');
+        let chatMessagesDiv = document.getElementById('chat-messages');
+        msg_list = messages
         messages.forEach((msg) => {
           const item = document.createElement('div');
           item.textContent = `(${msg.time}) | ${msg.user}: ${msg.message}`;
@@ -72,16 +95,23 @@
       });
       
       socket.on('chooseName', () => {  // prompt-a notenda til að velja notendanafn
-        let userName = prompt('Veldu notendanafn.');
+        userName = prompt('Veldu notendanafn.');
+          //console.log("choosename", userName)
         socket.emit('chooseName', userName);
       });
 
       socket.on('chat message', (data) => {
+          //console.log("chatmsg", userName)
+        //console.log("before", data)
+        if (!current_filter || current_filter === data.user || data.user === userName) {
         const item = document.createElement('li');
+        //console.log("after", data)
         item.textContent = `(${data.time}) | ${data.user}: ${data.message}`; // Kemur út svona: (01/01/2024 13:37) | Notendanafn: Skilaboð
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
+      } 
       });
+
     </script>
 
   </body>

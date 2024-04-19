@@ -46,8 +46,9 @@ MongoClient.connect(uri, options)
         
         // Emit Emit-a eldri skilaboðum til nýs notenda
         try {
+          
           const messages = await db.collection('messages').find().toArray();
-          //console.log('Previous messages:', messages); // gera log af eldri skilaboðum
+          //console.log('Previous Messages:', messages); // gera log af eldri skilaboðum
           socket.emit('previousMessages', messages);
         } catch (error) {
           console.error('Error: Næst ekki að sækja frá MongoDB:', error);
@@ -89,7 +90,7 @@ io.on('connection', (socket) => {
     onlineUsers.push(userName);
     io.emit('updateOnlineUsers', onlineUsers);
   });
-
+//          const messages = await db.collection('messages').find({user: "David"}).toArray();
   socket.on('disconnect', () => { // Þegar notandi aftengist
     console.log('Notandi aftengdist');
     const index = onlineUsers.indexOf(socket.userName);
