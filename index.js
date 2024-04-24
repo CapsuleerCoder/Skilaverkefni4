@@ -1,27 +1,24 @@
 import express from 'express';
 import { createServer } from 'http';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
 import { Server } from 'socket.io';
-
 import { MongoClient } from 'mongodb';
+
+// sækjum næst routerinn úr routes möppunni
+import { router } from './routes/routes.js';
 
 const app = express();
 const server = createServer(app);
 
 const io = new Server(server);
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
 const PASSWORD = "1337"; // Lykilorð sem FASTI
 
 let onlineUsers = [];
 let db;
 
-app.get('/', (req, res) => {
-  res.sendFile(join(__dirname, 'index.html'));
-});
-app.use(express.static(join(__dirname, ''))); // til að css nái að tengjast
+// nýtum okkur routerinn okkar sem við sóttum frá index.js í routes möppunni
+app.use('/', router);
+
 
 
 // Tengja URI fyrir mongodb 
