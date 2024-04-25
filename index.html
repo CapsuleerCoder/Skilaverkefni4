@@ -53,27 +53,39 @@
 
       filterform.addEventListener("submit", function(e) {
       e.preventDefault();
-        let chatMessagesDiv = document.getElementById('chat-messages');
+        if (!filter1.value) {return}        // if filter empty þá stoppa function 
+        let chatMessagesDiv = document.getElementById('chat-messages');   
         const filteredmsg = msg_list.filter(msg => msg.user === filter1.value )
-        document.getElementById("chat-messages").innerHTML = "";
+        document.getElementById("chat-messages").innerHTML = "";    // hreinsar chat-messages
         filteredmsg.forEach((msg) => {
           const item = document.createElement('div');
           item.textContent = `(${msg.time}) | ${msg.user}: ${msg.message}`;
           chatMessagesDiv.appendChild(item);
         })          
-        current_filter = filter1.value;
-        filter1.value = '';
+        current_filter = filter1.value;       //vistar filterinn
+        filter1.value = '';                 //hreinsar filter boxið
+        let filteredNewMsg = Array.from(messages.children).filter(function(new_message) {
+          return new_message.textContent.includes(current_filter);
+        })
+        messages.innerHTML = ""
+        filteredNewMsg.forEach( function(new_message){
+          messages.appendChild(new_message.cloneNode(true))
+        })
         //socket.emit('filter', filter1.value);
       })
 
       filterclean.addEventListener("click", function (){
+        document.getElementById("chat-messages").innerHTML = "";    // hreinsar chat-messages
         let chatMessagesDiv = document.getElementById('chat-messages');
         msg_list.forEach((msg) => {
           const item = document.createElement('div');
           item.textContent = `(${msg.time}) | ${msg.user}: ${msg.message}`;
           chatMessagesDiv.appendChild(item);
-          current_filter = ""
-        });
+          current_filter = ""       //hreinsar filter 
+          
+        })
+        
+        ;
       })
 
       form.addEventListener('submit', (e) => {
@@ -108,6 +120,7 @@
         //console.log("after", data)
         item.textContent = `(${data.time}) | ${data.user}: ${data.message}`; // Kemur út svona: (01/01/2024 13:37) | Notendanafn: Skilaboð
         messages.appendChild(item);
+        msg_list.push(data);      // skítafix fyrir síu, skil ekki array nógu vel. 
         window.scrollTo(0, document.body.scrollHeight);
       } 
       });
