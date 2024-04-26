@@ -116,6 +116,10 @@ io.on('connection', (socket) => {
     // Emit-a skilaboðin til notenda
     io.emit('chat message', { time: dateTime, user: socket.userName, message: msg });
   });
+
+  socket.on("chat_update", function(msg_list) {
+    io.emit("chat_download", msg_list)
+  })
 });
 
 server.listen(3000, () => {
