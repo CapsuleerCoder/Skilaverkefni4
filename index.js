@@ -18,7 +18,7 @@ let db;
 
 // nýtum okkur routerinn okkar sem við sóttum frá index.js í routes möppunni
 app.use('/', router);
-
+let messages = []
 
 
 // Tengja URI fyrir mongodb 
@@ -43,10 +43,10 @@ MongoClient.connect(uri, options)
         
         // Emit Emit-a eldri skilaboðum til nýs notenda
         try {
+
+           messages = await db.collection('messages').find().toArray();
           
-          const messages = await db.collection('messages').find().toArray();
-          //console.log('Previous Messages:', messages); // gera log af eldri skilaboðum
-          socket.emit('previousMessages', messages);
+          
         } catch (error) {
           console.error('Error: Næst ekki að sækja frá MongoDB:', error);
         }
@@ -70,6 +70,7 @@ io.on('connection', (socket) => {
   // Auðkenningin
   socket.on('authenticate', (password) => {
     if (password === PASSWORD) {
+      socket.emit('previousMessages', messages);
       console.log('Auðkenning tókst');
       socket.emit('chooseName'); 
     } else {
